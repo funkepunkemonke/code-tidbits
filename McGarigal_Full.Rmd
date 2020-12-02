@@ -1,0 +1,429 @@
+---
+title: "McGarigal Full Script"
+author: "Amanda Suzzi"
+date: "9/8/2020"
+output: 
+  html_document: 
+    toc: yes
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen=100)
+options(digits=2)
+
+```
+#Introduction (Week 1)
+##Expressions
+
+R can be used as a command-line calculator. When you observe the results, remember the rules for the order of operations: "PEMDAS."
+
+```{r Expressions}
+2*pi/360
+3 / 2^2 + 2 * pi
+((3 / 2)^2 + 2) * pi
+```
+
+## Variables
+
+Results of expressions can be saved as objects in the workspace.
+
+Like most programming languages, R allows users to create variables, which are essentially named
+computer memory. Names should be unique, and
+long enough to clearly identify the contents of the variable. You may work with the same data weeks
+or months later, and variable names like x or data are not very helpful.
+
+Variable names can consist of letters, numbers, and the character ".". They may not start with a
+number, or include the characters "$" or "_" or any arithmetic symbols as these have special
+meaning in R.
+
+Variables are assigned a value in an assignment statement, which in R has the variable name to the
+left of a left-pointing arrow (typed with the "less than" followed by a "dash") with the value behind
+the arrow. For example,
+
+
+```{r variables}
+number.species<-137
+pi<-3.14159
+
+small.value<-1.0e-10
+species.name<-'American robin'
+conifer<-TRUE
+```
+All R statements where you create objects, __assignment__ statements, have the same form:
+
+```{r eval = FALSE}
+object_name <- value
+```
+
+When reading that code say "object name gets value" in your head. Object names must start with a letter, and can only contain letters, numbers, `_` and `.`. You want your object names to be descriptive, so you'll need a convention for multiple words. I recommend __snake_case__ where you separate lowercase words with `_`. 
+
+```{r, eval = FALSE}
+i_use_snake_case
+otherPeopleUseCamelCase
+some.people.use.periods
+And_aFew.People_RENOUNCEconvention
+```
+
+You can inspect an object by typing its name:
+
+```{r}
+small.value
+```
+
+
+## Vectors
+
+Vectors, matrices, data frames and lists are identified by a name given the data structure at the time
+it is created. Names should be unique, and long enough to clearly identify the contents of the
+structure. Names can consist of letters, numbers, and the character ".". They may not start with a
+number, or include the characters "$" or "_" or any arithmetic symbols as these have special
+meaning in R.
+
+Vectors are often read in as data or produced as the result of analysis, but you can produce one
+simply using the c() function, which stands for "combine." Also, we can use the function length() to find out how many elements the vector has.
+
+
+Individual items within a vector or matrix can be identified by subscript (numbered 1 - n), which is
+indicated by a number (or numeric variable) within square brackets.
+
+```{r Vectors}
+demo.vector1<-c(1,4,2,6,12)
+demo.vector1
+length(demo.vector1)
+demo.vector1[4]
+```
+
+##Matrics
+A matrix can be created by simply binding together two or more vectors of the same type and length. We can  bind the two vectors together using the cbind() function to create a matrix. 
+
+```{r Vectors}
+demo.vector2<-c(4,2,1,2,4)
+demo.matrix<-cbind(demo.vector1,demo.vector2)
+demo.matrix
+```
+##Functions
+Most work in R is done with functions. R has a large collection of built-in functions, ie rnorm (sample from a normal distribution).
+
+Let's try using `seq()` which makes regular **seq**uences of numbers and, while we're at it, learn more helpful features of RStudio. Type `se` and hit TAB. A popup shows you possible completions. Specify `seq()` by typing more (a "q") to disambiguate, or by using ↑/↓ arrows to select. Notice the floating tooltip that pops up, reminding you of the function's arguments and purpose. If you want more help, press F1 to get all the details in the help tab in the lower right pane. 
+
+Press TAB once more when you've selected the function you want. RStudio will add matching opening (`(`) and closing (`)`) parentheses for you. Type the arguments `1, 10` and hit return.
+
+```{r Functions}
+seq(1, 10)
+```
+
+Type this code and notice you get similar assistance with the paired quotation marks:
+
+```{r}
+x <- "hello world"
+```
+
+Quotation marks and parentheses must always come in a pair. RStudio does its best to help you, but it's still possible to mess up and end up with a mismatch. 
+
+R can also use the vector functions listed below:
+max(x)        
+min(x)
+sum(x)
+mean(x)
+median(x)
+range(x)
+var(x)
+sd(x)
+
+```{r Functions}
+?rnorm #shows the help file
+rnorm(20) #20 is the number of observations
+rnorm(20, mean=180, sd=10)
+```
+
+###Self-Assessment 1
+1. Find the working Directory
+2. Draw 1000 random number with mean 120 and sd 40
+3. Summarize it
+4. show it as a histogram
+
+```{r Self-Assessment 1, eval=FALSE, include=FALSE}
+getwd()
+sample<- rnorm(1000, 120, 40)
+summary(sample)
+hist(sample, breaks=20)
+```
+## Data Frames
+Data frames can be accessed exactly as can matrices, but can also be accessed by data frame and
+column or field name.
+
+Because the variable types are mixed in this incoming data set (containing both numeric and
+character fields), the data structure will be classed as a data frame automatically. 
+
+The CO2 data.frame is a dataset built into R showing the results of an experiment on the cold tolerance of grass. Grass samples from two regions (Quebec and Mississippi) were grown in either a chilled or nonchilled environment, and their CO2 uptake rate was tested.
+
+One way to view the structure of an object is via the str() function. Additionally, you can see the different variables in the dataframe and view a portion of the object using the head() function. 
+
+In the CO2 dataset, there is a column named 'Type' that holds the location of the tested plants. This column can be accessed as CO2$Type, and summarized using the table() function. The table command simply adds up the frequency of each unique value of the data.\
+
+If you are routinely working with one
+or a few data frames, R can be told the name(s) of the data frames in an ‘attach’ statement, and the
+data frame name and separator can be omitted. If we attach(CO2), we can then access 'CO2$Type' simply as 'Type'.
+
+This is more concise notation, but means that we cannot have a variable with the same name in another attached data frame. Data frames are extraordinarily useful in R.
+
+```{r Data Frames}
+data(CO2) #example data that comes with R!
+View(CO2)#note that capitalization matters!
+str(CO2)
+head(CO2)
+table (CO2$Type)
+
+attach(CO2)
+table (Type)
+detach(CO2) 
+
+```
+###Self-Assessment 2
+1. Evaluate and report the mean and standard deviation of the variables "Concentration" and "Uptake".
+2. Create a boxplot comparing the CO2 uptake between the two treatments of grass- "chilled" and "nonchilled"
+3. Perform a t-test to test for a difference in CO2 uptake between the two treatments of grass- "chilled" and "nonchilled"
+4. What is the p-value computed by this t-test?
+
+```{r Self-Assessment 2, eval=FALSE, include=FALSE}
+mean(CO2$conc)
+mean(CO2$uptake)
+boxplot(uptake~Treatment, data=CO2)
+t.test(CO2$uptake ~ CO2$Treatment)
+```
+
+##Creating Subsets of a Matrix or Data Frame
+
+It is frequently useful or necessary to subset a data set by selecting certain columns, rows or both.
+For example, you may need to select a set of numeric variables (columns) from a data frame
+containing a mixture of variable types in order to conduct subsequent analyses that require numeric
+data. Or you may wish to select a set of observations (rows) that meet certain criteria. There are
+many ways to subset a data set depending on whether you are selecting columns or rows and whether the data structure is a matrix or data frame. Here we will assume that the initial data
+structure is a data frame, since this is what we will typically be working with. Here are several
+options for creating a subset of the initial data set:
+
+```{r subset}
+CO2.new<-CO2[,2:3] #select all rows and columns 2 through 3
+CO2.new<-CO2[1:4,] #select rows 1 through 4 and all columns
+CO2.new<-subset(CO2,subset=Type=="Quebec") #select all rows where Type=="Quebec"
+CO2.new<-subset(CO2,subset=uptake>35) #select all rows where BLOCK>10
+CO2.new<-subset(CO2,subset=uptake>35&Type=="Quebec") #select rows meeting both criteria
+```
+
+##Plotting in R
+
+There are many different kinds of plots for displaying data. You may have already figured out how to make a histogram and boxplot. There are many different so-called “high-level” plotting functions, for
+example:
+plot() — line/point plots; output depends on class of data
+hist() — histogram of single variable
+boxplot() — box-and-whisker plot of single variable
+qqnorm() — quantile-quantile plot of single variable
+coplot() — graphs of 3 or more variables
+image() — draws grid of rectangles using 3 variables
+contour() — draws contours using 3 variables
+persp() — draws 3D surface
+pairs() — all pairwise plots between multiple variables
+
+In addition, there are many so-called “low-level” plotting functions used to plot additional elements
+over an existing plot (i.e., overlays). These low-level functions are always called after a high-level
+command in order to supplement the high-level plot. Some examples of low-level commands
+include:
+
+points() — add points to an existing plot
+lines() — add lines to an existing plot
+text() —add text to an existing plot
+abline() — draw a line in intercept and slope form across an existing plot
+polygon() — draw a polyon on an existing plot
+legend() — add a legend to an existing plot
+title() — add a title to an existing plot
+axis() — add further axis scales to an existing plot
+
+There is of course much more detail to plotting in R, but this should suffice for now.
+
+###Self Assessment 3
+1. Load in the data 'trees'
+2. View the data structure
+3. What is the average volume?
+4. What is the height of the first tree?
+5. Plot height vs volume. 
+
+```{r Self-Assessment 3, eval=FALSE, include=FALSE}
+data(trees)
+str(trees)
+mean(trees$Volume)
+trees[1,2]
+plot(trees$Height, trees$Volume)
+```
+
+#Data Exploration (Weeks 2-3)
+##Importing a data set
+Importing data into R is fairly simple. The data represent standardized breeding bird counts (birds) and a variety of habitat variables (hab) for 30 subbasins in the Oregon Coast Range.
+```{r import data}
+#From A Comma Delimited Text File
+birds<-read.csv('bird.sub.csv',header=TRUE)
+hab<-read.csv('hab.sub.missing.csv',header=TRUE)
+
+str(birds)
+str(hab)
+```
+
+##Summary Statistics
+Calculate summary statistics for logical groups of numeric variables and examine them for suspicious
+values that may signal a possible data entry error. In particular, note the minimum and maximum
+values for obvious errors. In addition, examine the summary statistics to gain a general
+understanding of the range of values observed and the frequency of zeros and missing values.
+```{r Summary Statistics}
+if (!require('pastecs')) install.packages('pastecs'); library('pastecs')
+stat.desc(birds[,4:104])
+stat.desc(hab[,3:7])
+
+```
+
+## Missing Values
+Missing values in a vector or matrix are always a problem in ecological data sets. Sometimes it is best simply to remove samples with missing data, but often only one or a few values are missing, and it's best to keep the sample in the matrix with a suitable missing
+value code. 
+
+Review the column and row summary statistics above and note the amount and pattern of missing
+data. If some cases it may be suitable to simply drop all records with any missing values. For
+example, with a large data set, dropping a few observations may not have any effect on the results,
+so it might be easiest to simply drop any observation with missing data. This can be done easily using the na.omit() function, or na.rm=TRUE for some functions.
+
+In some cases it may be justifiable to replace the missing values with another value, like the mean. 
+
+Be aware that data imputation methods exist for handling missing data that go way beyond
+the simple methods presented here. If missing data is a serious issue in your data set, then it will
+behoove you to investigate imputation methods further.
+```{r Missing Values}
+temp<-na.omit(hab)
+mean(hab$s.sidi,na.rm=TRUE)
+
+temp<-hab
+temp$s.sidi[is.na(temp$s.sidi)]<-mean(temp$s.sidi,na.rm=TRUE)
+temp$s.sidi
+```
+##Abundance/occurrence analysis
+There are several things about the species we may wish to know:
+
+1. in how many plots does each species occur?
+2. what is the mean abundance of each species when it occurs (not averaging zeros for plots where it is absent)?
+3. is the mean abundance of species correlated with the number of plots in which it occurs?
+how many species occur in each plot?
+4. is the total abundance of species in a plot correlated with the number of species in a plot?
+```{r occurrence and abundance}
+#1
+spc.pres<-apply(birds[,4:104]>0,2,sum)
+plot(sort(spc.pres),
+       main="Cumulative Distribution of Species Occurrences",
+       xlab='Cumulative Count of Species',ylab='Number of Plots')
+sort(spc.pres)
+hist(spc.pres)
+
+#2
+tmp <- apply(birds[,4:104],2,sum)
+spc.mean <- tmp/spc.pres
+plot(sort(spc.mean),main="Cumulative Species Abundance Distribution",
+    xlab="Cumulative Number of Species",ylab="Mean Abundance")
+
+#3
+plot(spc.pres,spc.mean)
+
+#4
+plt.pres<-apply(birds[,4:104]>0,1,sum)  
+plt.sum <- apply(birds[,4:104],1,sum)
+
+plot(plt.pres,plt.sum,main="Relationship",
+    xlab="Frequency of Occurance",ylab="Mean Abundance")
+```
+Is there any apparent relationship between the two? Are the widespread species also generally more abundant?
+Are there many widespread species that occur at low abundance? Conversely, are there species much
+less widespread, but abundant where they occur? Do most
+plots support an average number of species, while only a few plots support either very few or very
+many species? Or is the pattern different?
+
+##Correlation between pairs of variables
+
+Before considering a formal statistical analysis involving multiple variables, it is always useful to
+examine the nature of the relationships between pairs of variables, including both dependent and
+interdependent relationships. At the risk of being accused of data-dredging, inspecting these
+relationships can be very useful in determining the form of the statistical relationship between the
+independent and dependent variables and evaluating the underlying assumptions (e.g., linearity,
+multicolinearity) of the model to be employed.
+
+```{r correlation}
+pairs(trees, lower.panel = panel.cor, upper.panel = panel.smooth)
+pairs(CO2, lower.panel = panel.cor, upper.panel = panel.smooth)
+#birds is too large to fit the correlation plots on my screen!
+```
+
+#Deterministic Functions (Weeks 4-5)
+
+Statistical models are comprised of a deterministic model(s) and a stochastic model(s). The
+deterministic part is the average, or expected pattern in the absence of any kind of randomness or
+measurement error (i.e., stochasticity). The deterministic model can be phenomenological (i.e.,
+simple relationship based on the observed patterns in the data), mechanistic (i.e., relationship based
+on underlying environmental theory), or even a complex individual-based simulation model.
+Importantly, the deterministic model is intended to represent the underlying environmental process,
+and estimating the parameters of this model is usually the focus of statistical modeling.
+
+It is usually a good idea to have an a priori idea of the expected form of the deterministic model,
+since this explicitly ties the model to environmental theory. A deterministic model constructed in this manner, such that the model parameters have a mechanistic relationship to an environmental
+process, is sometimes referred to as a “mechanistic” model. In this case, the model parameters have
+a direct environmental interpretation.
+
+A few examples will serve to illustrate the methods for writing and examining mathematical functions.
+
+##Linear Function
+we will create and examine a simple linear function to describe the relationship between the extent of late-successional forest and the relative abundance of brown creepers across
+30 landscapes. For our purposes, we are only interested in two: (1) brown creeper abundance (BRCR), and (2) the amount of late-successional forest (ls).
+
+We begin by plotting the data. The first thing that you should notice about the plot is that brown creeper abundance appears to increase linearly with increasing percentage of the landscape comprised of late-successional forest. Thus, it would be logical to propose a simple linear model to describe this relationship; i.e., to represent the deterministic component of a statistical model for this data. 
+
+The second thing that you should notice is that the relationship is not perfectly linear; i.e., there is considerable variability about the trend.
+```{r linear}
+#it is convenient to merge the bird and habitat data into a single file by typing:
+birdhab<-merge(hab,birds,by=c('basin','sub'))
+plot(birdhab$ls,birdhab$BRCR,xlim=c(0,120),ylim=c(0,1.2),
+  xlab='large sawtimber',ylab='Brown Creeper abundance',
+  main='linear model example',cex=1.5,cex.lab=1.5,cex.main=2,
+  pch=19,col='gray')
+abline(lm(BRCR ~ ls, data = birdhab), col="blue")
+legend('topleft',0.9,legend=c('Line of Best Fit'), lty=1,col='blue',cex=1)
+summary(lm(BRCR ~ ls, data = birdhab))
+
+```
+So, you have a line of best fit auto generated, but what is the intercept and slope? If you use summary(), you get all of that information, and more!
+
+##Logistic function
+In this example, we will create and examine a simple logistic function to describe the relationship
+between total basal area of trees and the presence/absence of brown creepers across 1046 sample
+plots in the Oregon Coast Range. The
+ data frame contains a lot of variables, but for our purposes we are only interested in two:
+(1) brown creeper abundance (BRCR), and (2) total basal area of trees (ba.tot).
+
+First, we need to transform the bird count data into presence/absence data (i.e. binary). 
+
+The first thing that you should notice about the plot is that the points on the y-axis are either 0 or 1,
+representing the absence and presence, respectively, of brown creepers. The second thing that you
+should notice is that brown creeper presence appears to increase somewhat with increasing total
+basal area. Thus, it would be logical to propose a simple logistic model to describe this relationship.
+
+```{r logistic}
+birds<-read.csv('bird.sta.csv',header=TRUE)
+hab<-read.csv('hab.sta.csv',header=TRUE)
+str(birds)
+str(hab)
+birdhab<-merge(hab,birds,by=c('basin','sub','sta'))
+
+birdhab.subset<-birdhab[,c('ba.tot','BRCR')]
+birdhab.subset$BRCR[birdhab.subset$BRCR>0]<-1
+
+plot(birdhab.subset$ba.tot,birdhab.subset$BRCR)
+```
+
+#Stochastic Fuctions (Weeks 6-7)
+
+#Classical Statistics (Weeks 8-9) or Generalised linear modelling
+#Resampling (Weeks 10-11) or Generalised additive modelling
+#Simulation (Weeks 12-13) or Mixed modelling and generalised least squares
