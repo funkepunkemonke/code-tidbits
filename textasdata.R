@@ -145,4 +145,4 @@ kwic_hagrid <- kwic(philosophers_stone_tokens,
 # look at the first few uses
 head(kwic_hagrid)
 
-
+hist(ntoken(harry_potter_corpus))
