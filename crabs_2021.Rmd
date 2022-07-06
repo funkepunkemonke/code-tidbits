@@ -1,0 +1,123 @@
+---
+title: "crabs_2021"
+author: "MGM"
+date: "4/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(boot)
+library(AICcmodavg)
+library(pscl)
+library(MuMIn)
+library(ggplot2)
+library(MASS)
+library(stats)
+options(scipen = 999)
+```
+
+## Bring in crabs
+
+```{r crabs}
+crabs <- read.table("C:/Users/megha/Box/Courses/ECO636/ECO636_2021_Spring/Lectures/Chris/08. Generalized linear models - Count data/1. Poisson glm/crabs.txt", header = T)
+crabs$AirTemp2 <- crabs$AirTemp^2
+```
+
+## Set list
+
+What are the models we can use?
+```{r fitlist, echo=FALSE}
+# Poisson
+m.null <- glm(Crabs ~ 1, data = crabs, family = "poisson")
+m.p1 <- glm(Crabs ~ Site, data = crabs, family = "poisson")
+m.p2 <- glm(Crabs ~ Site + AirTemp, data = crabs, family = "poisson")
+m.p3 <- glm(Crabs ~ Site + AirTemp + AirTemp2, data = crabs, family = "poisson")
+m.p4 <- glm(Crabs ~ AirTemp, data = crabs, family = "poisson")
+m.p5 <- glm(Crabs ~ AirTemp + AirTemp2, data = crabs, family = "poisson")
+
+# NB
+m.nb1 <- glm.nb(Crabs ~ Site, data = crabs)
+m.nb2 <- glm.nb(Crabs ~ Site + AirTemp, data = crabs)
+m.nb3 <- glm.nb(Crabs ~ Site + AirTemp + AirTemp2, data = crabs)
+m.nb4 <- glm.nb(Crabs ~ AirTemp, data = crabs)
+m.nb5 <- glm.nb(Crabs ~ AirTemp + AirTemp2, data = crabs)
+
+# ZIP
+m.zip1 <- zeroinfl(Crabs ~ Site, data = crabs, dist = "poisson", link = "logit")
+m.zip2 <- zeroinfl(Crabs ~ Site + AirTemp, data = crabs, dist = "poisson", link = "logit")
+m.zip3 <- zeroinfl(Crabs ~ Site + AirTemp + AirTemp2, data = crabs, dist = "poisson", link = "logit")
+m.zip4 <- zeroinfl(Crabs ~ AirTemp, data = crabs, dist = "poisson", link = "logit")
+m.zip5 <- zeroinfl(Crabs ~ AirTemp + AirTemp2, data = crabs, dist = "poisson", link = "logit")
+
+# ZINB
+m.zinb1 <- zeroinfl(Crabs ~ Site, data = crabs, dist = "negbin", link = "logit")
+m.zinb2 <- zeroinfl(Crabs ~ Site + AirTemp, data = crabs, dist = "negbin", link = "logit")
+m.zinb3 <- zeroinfl(Crabs ~ Site + AirTemp + AirTemp2, data = crabs, dist = "negbin", link = "logit")
+m.zinb4 <- zeroinfl(Crabs ~ AirTemp, data = crabs, dist = "negbin", link = "logit")
+m.zinb5 <- zeroinfl(Crabs ~ AirTemp + AirTemp2, data = crabs, dist = "negbin", link = "logit")
+
+m.list <- list(
+  "null" = m.null,
+  "p1" = m.p1,
+  "p2" = m.p2,
+  "p3" = m.p3,
+  "p4" = m.p4,
+  "p5" = m.p5,
+  "nb1" = m.nb1,
+  "nb2" = m.nb2,
+  "nb3" = m.nb3,
+  "nb4" = m.nb4,
+  "nb5" = m.nb5,
+  "zip1" = m.zip1,
+  "zip2" = m.zip2,
+  "zip3" = m.zip3,
+  "zip4" = m.zip4,
+  "zip5" = m.zip5,
+  "zinb1" = m.zinb1,
+  "zinb2" = m.zinb2,
+  "zinb3" = m.zinb3,
+  "zinb4" = m.zinb4,
+  "zinb5" = m.zinb5
+)
+```
+
+## AICc
+```{r AICc}
+aic.table <- data.frame(AIC = sapply(m.list, AIC))
+
+aic.table$Delta.AIC <- aic.table$AIC - min(aic.table$AIC)
+aic.table <- aic.table[order(aic.table$AIC),]
+aic.table
+```
+
+# m.best
+what does it look like?
+```{r best}
+m.best <- m.zinb3
+summary(m.best)
+```
+
+
+## Predict
+```{r predict}
+crabs.newdata <- expand.grid(seq(min(crabs$AirTemp),max(crabs$AirTemp),0.1), levels(crabs$Site))
+colnames(crabs.newdata) <- c("AirTemp","Site")
+crabs.newdata$AirTemp2 <- crabs.newdata$AirTemp^2
+
+crabs.newdata$pred.counts <- predict(m.best,crabs.newdata,type="response")
+crabs.newdata$pred.zeros <- predict(m.best,crabs.newdata,type="zero")
+
+ggplot(crabs.newdata, aes(AirTemp, pred.counts, color = Site)) +
+  geom_line() +
+  labs(title = "Predicted counts", y = "Predicted number of crabs") +
+  theme_classic()
+
+ggplot(crabs.newdata, aes(AirTemp, pred.zeros, color = Site)) +
+  geom_line() +
+  labs(title = "Predicted zeros", y = "Predicted proportion of zeros") +
+  theme_classic()
+```
+
+
+
